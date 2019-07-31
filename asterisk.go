@@ -16,6 +16,7 @@ type Asterisk struct {
 	wg     sync.WaitGroup
 }
 
+// NewAsterisk initializes the AMI socket with a login and capturing the events.
 func NewAsterisk(host string, username string, secret string) (*Asterisk, error) {
 
 	socket, err := ami.NewSocket(host)
@@ -45,6 +46,11 @@ func NewAsterisk(host string, username string, secret string) (*Asterisk, error)
 	go as.run()
 
 	return as, nil
+}
+
+// Events - get events
+func (as *Asterisk) Events() <-chan ami.Response {
+	return as.events
 }
 
 // run - listen events Asterisk
