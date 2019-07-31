@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"sync"
 
 	"github.com/heltonmarx/goami/ami"
@@ -41,6 +42,26 @@ func NewAsterisk(host string, username string, secret string) (*Asterisk, error)
 	}
 
 	as.wg.Add(1)
-	//go as.run()
+	go as.run()
+
 	return as, nil
+}
+
+// run - listen events Asterisk
+func (as *Asterisk) run() error {
+
+	defer as.wg.Done()
+	for {
+		select {
+		case <-as.stop:
+			return nil
+		default:
+			events, err := ami.Events(as.socket)
+			if err != nil {
+				log.Printf("AMI events failed: %v\n", err)
+				return err
+			}
+			as.events <- events
+		}
+	}
 }
