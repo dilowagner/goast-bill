@@ -48,7 +48,15 @@ func NewAsterisk(host string, username string, secret string) (*Asterisk, error)
 	return as, nil
 }
 
-// Events - get events
+// Logoff closes the current session with AMI.
+func (as *Asterisk) Logoff() error {
+	close(as.stop)
+	as.wg.Wait()
+
+	return ami.Logoff(as.socket, as.uuid)
+}
+
+// Events returns an channel with events received from AMI.
 func (as *Asterisk) Events() <-chan ami.Response {
 	return as.events
 }
