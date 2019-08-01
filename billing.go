@@ -1,5 +1,11 @@
 package main
 
+import (
+	"fmt"
+
+	"github.com/heltonmarx/goami/ami"
+)
+
 type Bill struct {
 	event   string
 	billsec int
@@ -7,28 +13,41 @@ type Bill struct {
 
 var bills map[string]Bill
 
-func ProcessEvents(c chan map[string]string) {
+func Billing(c <-chan ami.Response) {
 
-	chans := map[string]chan map[string]string{}
+	//chans := map[string]chan map[string]string{}
 	for e := range c {
 
-		uniqueID := e["UniqueID"]
-		if len(uniqueID) == 0 {
-			uniqueID = e["UniqueID"]
-		}
+		fmt.Println(e.Get("Event"))
 
-		switch e["Event"] {
+		uniqueId := e.Get("Uniqueid")
+		linkedId := e.Get("Linkedid")
 
-		case "Dial":
+		switch e.Get("Event") {
+
+		case "OriginateResponse":
 			{
-				if ch, ok := chans[uniqueID]; ok {
-					ch <- e
-					continue
+				fmt.Println("[DEBUG]: Originate Event")
+				b := bills[uniqueId]
+				b.event = "originate"
+			}
+
+		case "Newchannel":
+			{
+				fmt.Println("[DEBUG]: Newchannel Event")
+
+				if b, ok := bills[linkedId]; ok {
+					b.event = "originate"
+				} else if b, ok := bills[uniqueId]; !ok {
+					b.event = "manual"
 				}
 
-				ch := make(chan map[string]string, 3)
-				ch <- e
-
+				fmt.Println(e.Get("AccountID"))
+				fmt.Println(e.Get("LocalAddress"))
+			}
+		case "Hangup":
+			{
+				fmt.Println(e)
 			}
 		}
 	}

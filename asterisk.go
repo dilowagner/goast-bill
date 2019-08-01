@@ -29,7 +29,7 @@ func NewAsterisk(host string, username string, secret string) (*Asterisk, error)
 		return nil, err
 	}
 
-	const events = "system,call,all,user"
+	const events = "all"
 	err = ami.Login(socket, username, secret, events, uuid)
 	if err != nil {
 		return nil, err

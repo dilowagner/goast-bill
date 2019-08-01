@@ -2,19 +2,16 @@
 
 
 [[projects]]
-  digest = "1:34f70027246a9ffa418c0d5020c9dea0da2c3655cfd9942ac7dd9c8f458defab"
-  name = "github.com/ivahaev/amigo"
-  packages = [
-    ".",
-    "uuid",
-  ]
+  branch = "ami.v10"
+  digest = "1:e32384f7c08ba23f03023472a0913a5f071d57cafb7ee6fc0b2db61709686d91"
+  name = "github.com/heltonmarx/goami"
+  packages = ["ami"]
   pruneopts = "UT"
-  revision = "1181626757d11a14ed0cf8e3716b8e56efd8ac74"
-  version = "v0.1.9"
+  revision = "e22ae9607c13f1c02bdf2da3e4d9385ffac2bbcc"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  input-imports = ["github.com/ivahaev/amigo"]
+  input-imports = ["github.com/heltonmarx/goami/ami"]
   solver-name = "gps-cdcl"
   solver-version = 1
