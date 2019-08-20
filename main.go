@@ -21,10 +21,11 @@ func main() {
 	}
 	defer asterisk.Logoff()
 
-	log.Printf("connected with asterisk\n")
+	log.Printf("Connected with asterisk\n")
 
 	events := asterisk.Events()
-	Billing(events)
-	//result := <-events
-	//log.Printf("EVENT: %v\n", result["Event"])
+	// New Billing struct
+	billing := NewBilling()
+	// Listen Events
+	billing.Listen(events)
 }
