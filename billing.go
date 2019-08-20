@@ -7,6 +7,10 @@ import (
 	"github.com/heltonmarx/goami/ami"
 )
 
+type Billing struct {
+	bills map[string]Bill
+}
+
 type Bill struct {
 	event      string
 	id         int
@@ -26,6 +30,8 @@ type Bill struct {
 	callflow   []interface{}
 }
 
+var count map[string]int
+
 const (
 	Answered   = "ANSWERED"
 	No_Answer  = "NO ANSWER"
@@ -36,12 +42,16 @@ const (
 	Invalid    = "INVALID"
 )
 
-var bills map[string]Bill
-var count map[string]int
+func NewBilling() *Billing {
+	bs := make(map[string]Bill)
+	b := &Billing{
+		bills: bs,
+	}
+	return b
+}
 
-func Billing(c <-chan ami.Response) {
+func (bil *Billing) Listen(c <-chan ami.Response) {
 
-	bills = make(map[string]Bill)
 	//chans := map[string]chan map[string]string{}
 	for e := range c {
 
@@ -57,7 +67,7 @@ func Billing(c <-chan ami.Response) {
 		case "OriginateResponse":
 			{
 				fmt.Println("[DEBUG]: Originate Event")
-				b := bills[uniqueId]
+				b := bil.bills[uniqueId]
 				b.event = "originate"
 			}
 
@@ -65,16 +75,16 @@ func Billing(c <-chan ami.Response) {
 			{
 				fmt.Println("[DEBUG]: Newchannel Event")
 
-				if b, ok := bills[linkedId]; ok {
+				if b, ok := bil.bills[linkedId]; ok {
 					b.event = "originate"
-				} else if _, ok := bills[uniqueId]; !ok {
+				} else if _, ok := bil.bills[uniqueId]; !ok {
 
 					fmt.Println(e)
 
 					//fmt.Println(b)
 					count[uniqueId] = 1
 
-					bills[uniqueId] = Bill{
+					bil.bills[uniqueId] = Bill{
 						event:      "manual",
 						id:         count[uniqueId],
 						callid:     e.Get("Uniqueid"),
@@ -90,7 +100,7 @@ func Billing(c <-chan ami.Response) {
 						billsec:    0,
 					}
 
-					_, err := fmt.Println(bills[uniqueId])
+					_, err := fmt.Println(bil.bills[uniqueId])
 					if err != nil {
 						panic(err)
 					}
