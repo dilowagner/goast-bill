@@ -71,6 +71,10 @@ func (bil *Billing) Listen(c <-chan ami.Response) {
 				b.event = "originate"
 			}
 
+		case "BridgeCreate":
+			{
+				fmt.Println(e)
+			}
 		case "Newchannel":
 			{
 				fmt.Println("[DEBUG]: Newchannel Event")
